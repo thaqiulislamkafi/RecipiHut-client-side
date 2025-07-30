@@ -1,0 +1,89 @@
+@import "tailwindcss";
+@plugin "daisyui" {
+  themes: light --default;
+}
+@custom-variant dark (&:where(.dark, .dark *));
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Sora:wght@100..800&display=swap');
+
+
+
+.poppins {
+    font-family: "Poppins", sans-serif;
+    font-style: normal;
+    
+  }
+
+  .sora-font {
+    font-family: "Sora", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;
+  }
+
+.blue-color {
+    color: #003EA4;
+}
+
+.yellow-color{
+    color: #FFD337;
+    font-weight:800;
+}
+
+.Navbar-three-colomn{
+ @apply py-5 flex justify-between items-center font-medium
+  
+}
+
+.Nav-mid {
+    @apply hidden md:flex gap-11 cursor-pointer p-1 font-medium
+}
+
+.Nav-mid :hover{
+
+    color: #23BE0A;
+
+}
+
+.Nav-mid .active {
+    color: #23BE0A;
+
+}
+
+.Nav-last {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.Nav-last img {
+    width: 33px;
+    height: auto;
+}
+
+.Button{
+    border-radius: 7px;
+    padding: 8px 20px;
+    font-size: 14px;
+    /* color: white; */
+    /* background-color: rgb(196, 198, 199); */
+    cursor: pointer;
+}
+
+.cover-title {
+  @apply  text-3xl lg:text-4xl md:text-3xl font-semibold pt-38  leading-10.5 
+}
+
+.cover-description {
+  @apply  text-sm font-light mt-3 lg:w-[33.10vw] text-gray-200
+}
+
+.cover-button {
+  @apply bg-white text-black font-semibold mt-6 transition-all hover:scale-105 duration-700
+}
+
+
+/* @plugin "daisyui/theme" {
+  name: "light";
+  default: true;
+} */
