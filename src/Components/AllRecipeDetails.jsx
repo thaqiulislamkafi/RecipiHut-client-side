@@ -30,7 +30,7 @@ const AllRecipeDetails = () => {
 
 
 
-            fetch(`https://server-site-nine-sandy.vercel.app/recipes/${recipeData._id}`, {
+            fetch(`http://localhost:5000/recipes/${recipeData._id}`, {
                 method: 'PATCH',
                 headers: {
                     'content-type': 'application/json'

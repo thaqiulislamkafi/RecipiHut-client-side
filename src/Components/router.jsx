@@ -22,7 +22,7 @@ const router = createBrowserRouter (
                 {
                     index : true,
                     element : <Body/>,
-                    loader : ()=> fetch('https://server-site-nine-sandy.vercel.app/topRecipes'),
+                    loader : ()=> fetch('http://localhost:5000/topRecipes'),
                     hydrateFallbackElement : <Loading/>
                     
                 },
@@ -35,7 +35,7 @@ const router = createBrowserRouter (
                 {
                     path : 'allRecipe',
                     element : <AllRecipe/>,
-                    loader : ()=> fetch('https://server-site-nine-sandy.vercel.app/recipes'),
+                    loader : ()=> fetch('http://localhost:5000/recipes'),
                     hydrateFallbackElement : <Loading/>
 
                 },
@@ -59,14 +59,14 @@ const router = createBrowserRouter (
                 {
                     path : 'myRecipe',
                     element : <PrivateRoute><MyRecipe/></PrivateRoute> ,
-                    loader : ()=> fetch('https://server-site-nine-sandy.vercel.app/recipes'),
+                    loader : ()=> fetch('http://localhost:5000/recipes'),
                     hydrateFallbackElement : <Loading/>
 
                 },
                 {
                     path : 'allRecipeDetails/:id',
                     element : <PrivateRoute><AllRecipeDetails/></PrivateRoute> ,
-                    loader : ({params}) => fetch(`https://server-site-nine-sandy.vercel.app/recipes/${params.id}`),
+                    loader : ({params}) => fetch(`http://localhost:5000/recipes/${params.id}`),
                     hydrateFallbackElement : <Loading/>
 
                 },

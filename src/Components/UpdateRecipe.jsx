@@ -44,7 +44,7 @@ const { user } = use(AuthContext);
         // alert('Recipe added! Check console for data.');
 
 
-        fetch(`https://server-site-nine-sandy.vercel.app/recipes/${recipe._id}`, {
+        fetch(`http://localhost:5000/recipes/${recipe._id}`, {
             method: 'PUT',
             headers: {
                 'content-type': 'application/json'

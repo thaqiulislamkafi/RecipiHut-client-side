@@ -54,7 +54,7 @@ const RecipeCard = ({ recipe, myrecipes, setMyRecipes }) => {
 
     const handleDelete = (_id) => {
 
-        fetch(`https://server-site-nine-sandy.vercel.app/recipes/${_id}`, {
+        fetch(`http://localhost:5000/recipes/${_id}`, {
             method: 'DELETE'
         })
             .then(res => res.json())
