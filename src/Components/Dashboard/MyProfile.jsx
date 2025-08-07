@@ -12,6 +12,7 @@ const MyProfile = () => {
                 <img className='rounded-xl w-30' src={user?.photoURL} alt="" />
             </div>
             <p className='text-gray-800 font-bold text-lg'>Name</p>
+            <p className='text-gray-800 font-bold '>{user?.displayName}</p>
         </div>
     );
 };
