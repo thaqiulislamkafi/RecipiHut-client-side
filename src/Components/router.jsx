@@ -1,7 +1,6 @@
 import { createBrowserRouter } from "react-router";
 import Home from "./Home";
 import Body from "./Home/Body";
-import AddRecipe from "./addRecipe";
 import AllRecipe from "./AllRecipe";
 import LogIn from "./LogIn";
 import SignUp from "./SignUp";
@@ -10,6 +9,9 @@ import MyRecipe from "./MyRecipe";
 import AllRecipeDetails from "./AllRecipeDetails";
 import Error from "./Error";
 import ResetPassword from "./ResetPassword";
+import AddRecipe from "./AddRecipe";
+import Dashboard from "./Dashboard/Dashboard";
+import MyProfile from "./Dashboard/MyProfile";
 
 
 const router = createBrowserRouter (
@@ -35,7 +37,6 @@ const router = createBrowserRouter (
                 {
                     path : 'allRecipe',
                     element : <AllRecipe/>,
-                    loader : ()=> fetch('http://localhost:5000/recipes'),
                     hydrateFallbackElement : <Loading/>
 
                 },
@@ -59,18 +60,26 @@ const router = createBrowserRouter (
                 {
                     path : 'myRecipe',
                     element : <PrivateRoute><MyRecipe/></PrivateRoute> ,
-                    loader : ()=> fetch('http://localhost:5000/recipes'),
                     hydrateFallbackElement : <Loading/>
 
                 },
                 {
-                    path : 'allRecipeDetails/:id',
-                    element : <PrivateRoute><AllRecipeDetails/></PrivateRoute> ,
-                    loader : ({params}) => fetch(`http://localhost:5000/recipes/${params.id}`),
+                    path : 'allRecipeDetails/:recipeId',
+                    element : <PrivateRoute><AllRecipeDetails/></PrivateRoute>,
                     hydrateFallbackElement : <Loading/>
 
                 },
                 
+            ]
+        },
+        {
+            path : '/dashboard',
+            element : <Dashboard/>,
+            children : [
+                {
+                    path : 'profile',
+                    element : <MyProfile/>
+                }
             ]
         },
         {

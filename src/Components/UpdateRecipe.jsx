@@ -1,119 +1,69 @@
-import React, { use, useState } from 'react';
+import React, { use } from 'react';
 import { AuthContext } from './Provider/AuthProvider';
 import Swal from 'sweetalert2';
+import { useForm } from 'react-hook-form';
+import { FormInput } from './AddRecipe';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import axiosSecure from './Hooks/useAxios';
 
-const UpdateRecipe = ({recipe}) => {
-const { user } = use(AuthContext);
-    // console.log(user.email);
+const UpdateRecipe = ({ recipe }) => {
 
-    const [UpRecipe, setUpRecipe] = useState({
-        userEmail: `${user.email}`,
-        title: `${recipe.title}`,
-        ingredients: `${recipe.ingredients}`,
-        instructions: `${recipe.instructions}`,
-        cuisineType: `${recipe.cuisineType}`,
-        prepTime: `${recipe.prepTime}`,
-        categories: [],
-        likes: 0,
-        photoURL: `${recipe.photoURL}`
-    });
+    const { user } = use(AuthContext);
+    const { register, formState: { errors }, handleSubmit } = useForm() ;
+    const queryClient = useQueryClient() ;
 
-    // Handle all changes
-    const handleChange = (e) => {
-        const { name, value, type, checked } = e.target;
+    const categoryList = ['breakfast', 'dessert', 'vegan', 'dinner', 'launch'];
+    const quisineTypes = ['Italian', 'Mexican', 'Indian', 'Chinese', 'Others'];
 
-        if (type === 'checkbox') {
-            setUpRecipe(prev => ({
-                ...prev,
-                categories: checked
-                    ? [...prev.categories, name]
-                    : prev.categories.filter(item => item !== name)
-            }));
-        } else {
-            setUpRecipe(prev => ({
-                ...prev,
-                [name]: type === 'number' ? Number(value) : value
-            }));
-        }
+    const {mutate} = useMutation({
+        mutationFn : async(newRecipe)=>{
+            const {data} = await axiosSecure.put(`/recipes/${recipe._id}`,newRecipe);
+            return data ;
+        },
+        onSuccess : ()=>{
+            Swal.fire({title: "Good job!",text: "SuccessFully Updated!",icon: "success"});
+            queryClient.invalidateQueries(['myRecipe']) ;
+        },
+        onError : ()=>{
+            Swal.fire({title: "Failed!",text: "Failed to Update!",icon: "error"});
+        },
+        
+    })
+
+    const onSubmit = (data) => {
+
+        data.likes = recipe.likes ;
+        data.prepTime = parseInt(data.prepTime);
+        data.categories = Object.keys(data.categories).filter(category => data.categories[category])
+        mutate(data) ;
+        
     };
-
-    // Handle form submit
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        console.log('Recipe Data:', UpRecipe);
-        // alert('Recipe added! Check console for data.');
-
-
-        fetch(`http://localhost:5000/recipes/${recipe._id}`, {
-            method: 'PUT',
-            headers: {
-                'content-type': 'application/json'
-            },
-            body: JSON.stringify(UpRecipe)
-        })
-            .then(res => res.json())
-            .then(data => {
-                console.log(data)
-                if (data.modifiedCount) {
-                    Swal.fire({
-                        title: "Good job!",
-                        text: "SuccessFully Updated!",
-                        icon: "success"
-                    });
-                }
-            })
-    };
-
-
 
     return (
         <div>
             <div className='mx-auto mb-30 sora-font '>
                 <p className='poppins font-bold text-3xl text-center my-10'>Update Recipe</p>
-                <form onSubmit={handleSubmit} className="fieldset bg-base-200 border-base-300 rounded-box  border p-4 mx-auto gap-6 dark:bg-gray-700">
+
+                <form onSubmit={handleSubmit(onSubmit)} className="fieldset bg-base-200 border-base-300 rounded-box  border p-4 mx-auto gap-6 dark:bg-gray-700">
+
+                    <FormInput label='Title' name='title' type='text' defaultValue={recipe.title} register={register} errors={errors} placeholder='Enter Recipe Title' />
+
+                    <FormInput label='Ingredients' type='text' name='ingredients' defaultValue={recipe.ingredients} register={register} errors={errors} placeholder="Enter Recipe's Ingredients" />
+
+                    <FormInput label='Instructions' type='text' name='instructions' defaultValue={recipe.instructions} register={register} errors={errors} placeholder="Enter New Instructions" />
+
+                    <FormInput label='Prep Time (mins)' type='number' name='prepTime' defaultValue={recipe.prepTime} register={register} errors={errors} placeholder="Enter New Instructions" />
 
                     <div className='flex flex-col gap-3'>
-                        <label className="label">Title</label>
-                        <input type="text" name='title' className="input w-full dark:bg-gray-700" value={UpRecipe.title} onChange={handleChange} placeholder="Enter Recipe Title" />
 
-                    </div>
-
-                    <div className='flex flex-col gap-3'>
-                        <label className="label">Ingredients</label>
-                        <input type="text" name='ingredients'
-                            value={UpRecipe.ingredients} className="input w-full dark:bg-gray-700" onChange={handleChange} placeholder="Enter Recipe's Ingredients" />
-                    </div>
-                    <div className='flex flex-col gap-3'>
-                        <label className="label">Instructions</label>
-                        <input type="text" name='instructions'
-                            value={UpRecipe.instructions} className="input w-full dark:bg-gray-700" onChange={handleChange} placeholder="Enter Instructions" />
-
-                    </div>
-
-                    <div className='flex flex-col gap-3'>
-                        <label className="label">Prep Time (mins):</label>
-                        <input
-                            type="number"
-                            name="prepTime"
-                            value={UpRecipe.prepTime}
-                            className="input w-full dark:bg-gray-700"
-                            onChange={handleChange}
-                            min="0"
-                        />
-                    </div>
-                    <div className='flex flex-col gap-3'>
                         <label className="label">Categories:</label>
-                        <div>
-                            {['Breakfast', 'Lunch', 'Dinner', 'Dessert', 'Vegan'].map(category => (
-                                <label className="label" key={category} >
-                                    <input
-                                        type="checkbox"
-                                        name={category.toLowerCase()}
-                                        className='mx-2 checkbox'
-                                        checked={UpRecipe.categories.includes(category.toLowerCase())}
-                                        onChange={handleChange}
-                                    />
-                                    {category}
+                        <div className='flex items-center gap-2'>
+                            {categoryList.map(cat => (
+                                <label key={cat} className='label cursor-pointer flex items-center gap-2'>
+                                    <span className='capitalize'>{cat}</span>
+                                    <input type="checkbox" 
+                                    defaultChecked={recipe.categories.includes(cat.toLowerCase())}
+                                    className='checkbox' {...register(`categories.${cat}`)} />
                                 </label>
                             ))}
                         </div>
@@ -121,26 +71,19 @@ const { user } = use(AuthContext);
                     </div>
 
                     <div className='flex flex-col gap-3'>
-                        <label className="label">Cuisine Type:</label>
-                        <select
-                            name="cuisineType"
-                            value={UpRecipe.cuisineType}
-                            onChange={handleChange}
-                            className="select dark:bg-gray-700"
-                        >
-                            <option value="Italian">Italian</option>
-                            <option value="Mexican">Mexican</option>
-                            <option value="Indian">Indian</option>
-                            <option value="Chinese">Chinese</option>
-                            <option value="Others">Others</option>
-                        </select>
+
+                          <label className="label">Cuisine Type:</label>
+                          <select {...register('cuisineType', { required: 'Cuisine Type is Required' })} className="select dark:bg-gray-700" defaultValue={recipe.cuisineType}>
+                                
+                          {quisineTypes.map(type =>(
+                            <option value={type}>{type}</option>
+                          ))}
+                          </select>
+                          {errors.cuisineType && (<p style={{ color: 'red' }}>{errors.cuisineType.message}</p>)}
+
                     </div>
 
-                    <div className='flex flex-col gap-3 '>
-                        <label className="label">Photo</label>
-                        <input type="text" name='photoURL' className="input w-full dark:bg-gray-700" value={UpRecipe.photoURL}
-                            onChange={handleChange} placeholder="Your PhotoURL" />
-                    </div>
+                    <FormInput label='Photo' type='text' name='photoURL' defaultValue={recipe.photoURL} register={register} errors={errors} placeholder="Enter New PhotoURL" />
 
                     <button className="btn mx-auto  w-full">Update Recipe</button>
                 </form>

@@ -1,5 +1,4 @@
-import React, { use, useState } from 'react';
-import { Link, useLoaderData } from 'react-router';
+import React, { use } from 'react';
 import { AuthContext } from './Provider/AuthProvider';
 import { MdDelete } from "react-icons/md";
 import { MdEdit } from "react-icons/md";
@@ -8,35 +7,37 @@ import { FaEye } from "react-icons/fa";
 import { SlLike } from "react-icons/sl";
 import UpdateRecipe from './UpdateRecipe';
 import { Fade } from 'react-awesome-reveal';
-
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import axiosSecure from './Hooks/useAxios';
+import Loading from './SharedElement/Loading';
 
 const MyRecipe = () => {
 
     const { user } = use(AuthContext);
-    const allRecipes = useLoaderData();
-    const initialRecipes = allRecipes.filter(recipe => recipe?.userEmail == user?.email);
+    const { data: myrecipes, isLoading } = useQuery({
+        queryKey: ['myRecipe',user?.email],
+        queryFn: async () => {
+            const { data } = await axiosSecure.get(`/recipes?email=${user?.email}`);
+            return data;
 
-    const [myrecipes, setMyRecipes] = useState(initialRecipes);
+        },
+        enabled: !!user?.email
+    })
 
-    console.log(initialRecipes);
+    if (!myrecipes || isLoading) return <Loading />
+
     return (
         <div>
             <div className='w-[85.94vw] mx-auto sora-font my-15'>
                 <Fade cascade >
                     <div>
-                    
-                    <p className='text-center text-3xl poppins font-bold' >My Recipe</p>
-        
+                        <p className='text-center text-3xl poppins font-bold' >My Recipe</p>
+                        <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 my-10'>
+                            {
+                                myrecipes.map(recipe => <RecipeCard recipe={recipe} ></RecipeCard>)
+                            }
 
-                    <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 my-10'>
-
-                        {
-
-                            myrecipes.map(recipe => <RecipeCard recipe={recipe} myrecipes={myrecipes} setMyRecipes={setMyRecipes}></RecipeCard>)
-
-                        }
-
-                    </div>
+                        </div>
                     </div>
                 </Fade>
 
@@ -48,30 +49,23 @@ const MyRecipe = () => {
 
 export default MyRecipe;
 
-const RecipeCard = ({ recipe, myrecipes, setMyRecipes }) => {
+const RecipeCard = ({ recipe }) => {
 
-    // const updateRecipe = recipe ;
+    const queryClient = useQueryClient();
 
-    const handleDelete = (_id) => {
+    const deleteRecipe = useMutation({
+        mutationFn : async (id)=>{
+            const {data} = await axiosSecure.delete(`/recipes/${id}`);
+            return data ;
+        },
+        onSuccess : ()=>{
+            Swal.fire({title: "Deleted!",text: "Your recipe has been deleted.",icon: "success"});
+            queryClient.invalidateQueries(['myRecipe'])
+        }
+    })
 
-        fetch(`http://localhost:5000/recipes/${_id}`, {
-            method: 'DELETE'
-        })
-            .then(res => res.json())
-            .then(data => {
-                console.log(data);
-                if (data.deletedCount) {
-                    Swal.fire({
-                        title: "Deleted!",
-                        text: "Your recipe has been deleted.",
-                        icon: "success"
-                    });
-                }
 
-                const remainingRecipes = myrecipes.filter(recipe => recipe._id !== _id)
-                setMyRecipes(remainingRecipes);
-            })
-    }
+    const handleDelete = (_id) => deleteRecipe.mutate(_id);
 
     return (
         <>
@@ -84,7 +78,7 @@ const RecipeCard = ({ recipe, myrecipes, setMyRecipes }) => {
 
                         <div className='flex gap-2 items-center'>
                             {
-                                recipe.categories.map(category => <p className='text-[#176AE5] text-[10px] px-2 py-1 bg-[#1769e51c] rounded-2xl dark:text-white'># {category}</p>)
+                                recipe?.categories?.map(category => <p className='text-[#176AE5] text-[10px] px-2 py-1 bg-[#1769e51c] rounded-2xl dark:text-white'># {category}</p>)
                             }
                         </div>
 

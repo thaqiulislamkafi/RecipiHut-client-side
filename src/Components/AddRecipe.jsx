@@ -6,13 +6,13 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import axiosSecure from './Hooks/useAxios';
 import { useForm } from 'react-hook-form';
 
-const FormInput = ({ label, name, register, type, errors, placeholder }) => (
+export const FormInput = ({ label, name, register, type, errors, placeholder, defaultValue }) => (
 
     <div className='flex flex-col gap-3'>
 
         <label className='label'>{label}</label>
-        <input type={type} className='input w-full dark:bg-gray-700' placeholder={placeholder} {...register(name, { required: `${label} is Required` })} />
-        {errors.name && (<p style={{ color: 'red' }}>{errors.name.message}</p>)}
+        <input type={type} className='input w-full dark:bg-gray-700' placeholder={placeholder} {...register(name, { required: `${label} is Required` })} defaultValue={defaultValue || ''} />
+        {errors[name] && (<p style={{ color: 'red' }}>{errors[name].message}</p>)}
 
     </div>
 )

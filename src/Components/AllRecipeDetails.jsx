@@ -1,58 +1,48 @@
-import React, { use, useState } from 'react';
-import { useLoaderData } from 'react-router';
-import { SlLike } from "react-icons/sl";
-import { AuthContext } from './Provider/AuthProvider';
-import { Fade } from 'react-awesome-reveal';
+import React, { use } from 'react';
+import { useParams } from 'react-router' ;
+import { SlLike } from "react-icons/sl" ;
+import { AuthContext } from './Provider/AuthProvider' ;
+import { Fade } from 'react-awesome-reveal' ;
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query' ;
+import axiosSecure from './Hooks/useAxios' ;
+import Loading from './SharedElement/Loading';
 
 
 const AllRecipeDetails = () => {
 
     const { user } = use(AuthContext);
+    const {recipeId} = useParams() ;
+    const queryClient = useQueryClient() ;
 
+    const {data : recipeData, isLoading} = useQuery({
+        queryKey : ['recipeDetails',recipeId],
+        queryFn : async()=>{
+            const {data} = await axiosSecure(`/recipes/${recipeId}`) ;
+            return data ;
+        },
+        enabled : !! recipeId 
+    })
 
-    const recipeData = useLoaderData();
-    const [like, setLike] = useState(recipeData.likes);
-    const [showLike, setShowLike] = useState(recipeData.likes);
-
-
+    const {mutate} = useMutation({
+        mutationFn : async(likes)=>{
+            const {data} = await axiosSecure.patch(`/recipes/${recipeId}`,{likes}) ;
+            return data ;
+        },
+        onSuccess :()=>{
+            queryClient.invalidateQueries(['recipeDetails'])
+        }
+    })
 
     const handleLike = () => {
-
-        if (user.email != recipeData.userEmail) {
-
-            setShowLike(showLike + 1);
-            setLike(like + 1);
-            // const email = recipeData.userEmail;
-
-            const newLike = {
-                like: like + 1
-            }
-
-
-
-            fetch(`http://localhost:5000/recipes/${recipeData._id}`, {
-                method: 'PATCH',
-                headers: {
-                    'content-type': 'application/json'
-                },
-                body: JSON.stringify(newLike)
-            })
-                .then(res => res.json())
-                .then(data =>
-                    console.log(data)
-                )
-        }
+        const newLikes = recipeData.likes+1 ;
+        console.log(newLikes)
+        mutate(newLikes)
     }
+    if(isLoading) return <Loading/>
 
-    console.log(recipeData)
     return (
         <div>
             <div>
-
-
-                {/* <Helmet>
-                    <title>Event Details | {id}</title>
-                </Helmet> */}
                 <Fade>
                     <div className='w-[85.94vw] mx-auto sora-font my-12'>
 
@@ -66,7 +56,7 @@ const AllRecipeDetails = () => {
                         {/* ..............Recipe Bar.............. */}
 
                         <div className='my-10 p-5 md:p-7 border-2 border-gray-200 rounded-xl flex flex-col md:flex-row md:items-center gap-8 font-medium'>
-                            <div className='bg-gray-200 md:p-6 rounded-xl lg:w-[29.13vw] h-auto'><img className='rounded-xl h-60 w-full' src={recipeData.photoURL} alt="" /></div>
+                            <div className='bg-gray-200 md:p-6 rounded-xl lg:w-[29.13vw] h-auto'><img className='rounded-xl h-60 w-full' src={recipeData?.photoURL} alt="" /></div>
 
                             <div className='text text-gray-700 dark:text-gray-200'>
 
@@ -85,7 +75,8 @@ const AllRecipeDetails = () => {
 
                                 <p className='font-medium my-2'>Cuisine Type : <span className='text-[#23BE0A] font-bold'>{recipeData.cuisineType}</span></p>
                                 <p className='font-medium my-2'>Instructions : <span className='text-[#23BE0A] font-bold'>{recipeData.instructions}</span></p>
-                                <button onClick={handleLike} className="btn btn-sm"><SlLike /> {showLike} </button>
+
+                                <button onClick={handleLike} className="btn btn-sm"><SlLike /> {recipeData.likes} </button>
 
 
                             </div>

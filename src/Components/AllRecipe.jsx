@@ -86,8 +86,7 @@ const Recipe = ({ recipe }) => {
                     </div>
                     <p className='font-bold my-2 text-lg md:text-2xl'>{recipe.title}</p>
                     <p className='text-gray-700 my-1  dark:text-gray-200'>Food Type: {recipe.cuisineType}</p>
-                    <div className='flex flex-col  justify-between dark:text-gray-200 text-gray-700
-text-gray-700'>
+                    <div className='flex flex-col  justify-between dark:text-gray-200 text-gray-700'>
                         <p className=' my-1  font-medium'> Ingredients : {recipe.ingredients}</p>
                         <p className=' my-1  font-medium'> Preparation Time : {recipe.prepTime}</p>
                     </div>

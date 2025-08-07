@@ -7,6 +7,9 @@ import { auth } from './Firebase/Authentication';
 import { toast, ToastContainer } from 'react-toastify';
 // import { Helmet } from 'react-helmet-async';
 import { useLocation } from 'react-router';
+import { useForm } from 'react-hook-form';
+import { FormInput } from './AddRecipe';
+import axiosSecure from './Hooks/useAxios';
 
 
 const LogIn = () => {
@@ -15,6 +18,7 @@ const LogIn = () => {
 
     const blackLogo = 'https://i.postimg.cc/R0FMxb5w/Black-logo.png';
     const whiteLogo = 'https://i.postimg.cc/WbH87dpj/white-logo.png' ;
+    const {register,handleSubmit,formState:{errors}} = useForm() ;
 
     const googleProvider = new GoogleAuthProvider();
     const navigate = useNavigate() ;
@@ -22,11 +26,29 @@ const LogIn = () => {
     const handleGoogleSignin = () => {
 
         signInWithPopup(auth, googleProvider)
-            .then(res => {
+            .then((res) => {
                 toast.success('Logged In Successfull',{
                     toastId : 'login-google'
                 });
                 setLoading(false);
+
+                const data = {
+                    name : res.user.displayName ,
+                    photoURL : res.user.photoURL,
+                    email : res.user.email ,
+                    role : 'user'
+
+                }
+
+                try {
+
+                    const res =  axiosSecure.post('/createUser',data);
+                    if(res.data?.insertedId)
+                        console.log('User inserted into DB') ;
+                } catch (error) {
+                    console.log(error);
+                }
+
                 console.log(res);
                 navigate(`${location.state ? location.state : "/"}`);
             })
@@ -36,19 +58,16 @@ const LogIn = () => {
             })
     }
 
-    const handleSigninWithEmail = (e) => {
-        e.preventDefault();
-        const email = e.target.email.value;
-        const password = e.target.password.value;
+    const handleSigninWithEmail = (data) => {
 
-        signInWithEmailAndPassword(auth, email, password)
+        signInWithEmailAndPassword(auth, data.email, data.password)
             .then(res => {
                 toast.success('Logged In SuccesFull',
                     {
                         toastId: 'LogIn Success'
                     });
                 setLoading(false);
-                console.log(res);
+
                 navigate(`${location.state ? location.state : "/"}`);
             })
             .catch(error => {
@@ -82,24 +101,27 @@ const LogIn = () => {
                         <h1 className="text-lg lg:text-2xl font-medium sora-font my-5">RecipeHut helps you connect and share  food items with the people </h1>
 
                     </div>
-                    <div className="card bg-base-100 w-full max-w-sm shrink-0 shadow-2xl dark:bg-gray-700">
+                    <div className="card  w-full max-w-sm shrink-0 shadow-2xl dark:bg-gray-700">
                         <div className="card-body">
 
-                            <form onSubmit={handleSigninWithEmail} className="fieldset ">
-                                <label className="label">Email</label>
-                                <input type="email " name='email'
-                                onChange={(e)=>setEmailValue(e.target.value)}
-                                className="input dark:bg-gray-700" placeholder="Email" />
-                                <label className="label">Password</label>
-                                <input type="password" name='password' className="input dark:bg-gray-700" placeholder="Password" />
+                            <form onSubmit={handleSubmit(handleSigninWithEmail)} className="fieldset ">
+
+                                <FormInput label='Email' type='email' name='email' register={register} errors={errors} placeholder='Enter Your Email'/>
+
+                                <FormInput label='Password' type='password' name='password' register={register} errors={errors} placeholder='Enter Your Password'/>
+
                                 <div><a onClick={handleForgot} className="link link-hover">Forgot password?</a></div>
                                 <button className="btn btn-neutral mt-4">Login</button>
 
                                 <div onClick={handleGoogleSignin} className="btn btn-outline mt-1">
-                                    <span><FcGoogle size={20} /></span> <span>SignIn with Google</span></div>
+                                    <span><FcGoogle size={20} /></span> <span>SignIn with Google</span>
+                                </div>
 
-                                <div className='text-center mt-8 font-medium'>
-                                    <Link to={'/signup'} ><p className='link'>Create an Account</p></Link>
+                                <div className='divider'>OR</div>
+
+                                <div className='text-center  font-medium'>
+                                    
+                                    <p className=''>Dont Have an account? <Link to={'/signup'} className='link text-[#23BE0A]'> Create </Link></p>
                                 </div>
                             </form>
                         </div>
