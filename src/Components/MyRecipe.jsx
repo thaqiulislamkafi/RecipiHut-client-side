@@ -14,8 +14,9 @@ import Loading from './SharedElement/Loading';
 const MyRecipe = () => {
 
     const { user } = use(AuthContext);
+
     const { data: myrecipes, isLoading } = useQuery({
-        queryKey: ['myRecipe',user?.email],
+        queryKey: ['myRecipe', user?.email],
         queryFn: async () => {
             const { data } = await axiosSecure.get(`/recipes?email=${user?.email}`);
             return data;
@@ -24,24 +25,59 @@ const MyRecipe = () => {
         enabled: !!user?.email
     })
 
+    const handleRecipe = async()=>{
+
+       
+    }
+
     if (!myrecipes || isLoading) return <Loading />
 
     return (
         <div>
-            <div className='w-[85.94vw] mx-auto sora-font my-15'>
+            <div className=' sora-font my-15'>
                 <Fade cascade >
                     <div>
                         <p className='text-center text-3xl poppins font-bold' >My Recipe</p>
-                        <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 my-10'>
-                            {
-                                myrecipes.map(recipe => <RecipeCard recipe={recipe} ></RecipeCard>)
-                            }
+                        <div className=' my-10 flex gap-3'>
 
+                            <div className="overflow-x-auto w-3/5">
+                                <table className="table table-zebra">
+                                    <thead>
+                                        <tr>
+                                            <th></th>
+                                            <th>Title</th>
+                                            <th>Food Type</th>
+                                            <th>Ingredients</th>
+                                            <th>Prep time</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {
+                                            myrecipes.map((recipe,index) => (
+                                                <tr onClick={handleRecipe}>
+                                                    <th>{index+1}</th>
+                                                    <td>{recipe.title}</td>
+                                                    <td>{recipe.cuisineType}</td>
+                                                    <td>{recipe.ingredients}</td>
+                                                    <td>{recipe.prepTime}</td>
+                                                </tr>
+                                            ))
+
+                                        }
+
+                                    </tbody>
+                                </table>
+
+                               
+                            </div>
+                            <div className='border border-gray-600 rounded-xl p-3'>
+                                    <p>Recipe Details : </p>
+                                    <p>Title : </p>
+                                    <p></p>
+                                </div>
                         </div>
                     </div>
                 </Fade>
-
-
             </div>
         </div>
     );
@@ -49,72 +85,75 @@ const MyRecipe = () => {
 
 export default MyRecipe;
 
-const RecipeCard = ({ recipe }) => {
-
-    const queryClient = useQueryClient();
-
-    const deleteRecipe = useMutation({
-        mutationFn : async (id)=>{
-            const {data} = await axiosSecure.delete(`/recipes/${id}`);
-            return data ;
-        },
-        onSuccess : ()=>{
-            Swal.fire({title: "Deleted!",text: "Your recipe has been deleted.",icon: "success"});
-            queryClient.invalidateQueries(['myRecipe'])
-        }
-    })
 
 
-    const handleDelete = (_id) => deleteRecipe.mutate(_id);
 
-    return (
-        <>
-            <div className=" bg-base-100 shadow-sm p-4 gap-4  flex flex-col dark:bg-gray-700 rounded-xl">
-                <div className='w-full h-50  '>
-                    <img className='rounded-xl w-full h-50  ' src={recipe.photoURL} />
-                </div>
-                <div className="flex flex-col gap-5 ">
-                    <div className='sora-font space-y-2 text-xs md:text-sm'>
+// const RecipeCard = ({ recipe }) => {
 
-                        <div className='flex gap-2 items-center'>
-                            {
-                                recipe?.categories?.map(category => <p className='text-[#176AE5] text-[10px] px-2 py-1 bg-[#1769e51c] rounded-2xl dark:text-white'># {category}</p>)
-                            }
-                        </div>
+//     const queryClient = useQueryClient();
 
-                        <p className='text-lg text-gray-800 font-bold dark:text-white'> Name : {recipe.title}</p>
-                        <p> Ingredients : {recipe.ingredients}</p>
-                        <p> Instructions : {recipe.instructions}</p>
-                        <p> Cuisine Type : {recipe.cuisineType}</p>
-                        <p> Preparation Time : {recipe.prepTime} Min</p>
-                    </div>
-                    <div className="flex gap-5 justify-center">
+//     const deleteRecipe = useMutation({
+//         mutationFn : async (id)=>{
+//             const {data} = await axiosSecure.delete(`/recipes/${id}`);
+//             return data ;
+//         },
+//         onSuccess : ()=>{
+//             Swal.fire({title: "Deleted!",text: "Your recipe has been deleted.",icon: "success"});
+//             queryClient.invalidateQueries(['myRecipe'])
+//         }
+//     })
 
-                        <button className="btn btn-sm"><SlLike /> {recipe.likes} </button>
 
-                        <button className="btn btn-sm" onClick={() => document.getElementById(`${recipe._id}`).showModal()}>Edit <MdEdit /></button>
+//     const handleDelete = (_id) => deleteRecipe.mutate(_id);
 
-                        <button onClick={() => handleDelete(recipe._id)} className="btn btn-sm">Delete <MdDelete /></button>
-                    </div>
-                </div>
+//     return (
+//         <>
+//             <div className=" bg-base-100 shadow-sm p-4 gap-4  flex flex-col dark:bg-gray-700 rounded-xl">
+//                 <div className='w-full h-50  '>
+//                     <img className='rounded-xl w-full h-50  ' src={recipe.photoURL} />
+//                 </div>
+//                 <div className="flex flex-col gap-5 ">
+//                     <div className='sora-font space-y-2 text-xs md:text-sm'>
 
-                <dialog id={recipe._id} className="modal">
-                    <div className="modal-box lg:w-6/12 max-w-5xl dark:bg-gray-800 dark:text-gray-200">
+//                         <div className='flex gap-2 items-center'>
+//                             {
+//                                 recipe?.categories?.map(category => <p className='text-[#176AE5] text-[10px] px-2 py-1 bg-[#1769e51c] rounded-2xl dark:text-white'># {category}</p>)
+//                             }
+//                         </div>
 
-                        {/* <p className="py-4">Click the button below to close</p> */}
+//                         <p className='text-lg text-gray-800 font-bold dark:text-white'> Name : {recipe.title}</p>
+//                         <p> Ingredients : {recipe.ingredients}</p>
+//                         <p> Instructions : {recipe.instructions}</p>
+//                         <p> Cuisine Type : {recipe.cuisineType}</p>
+//                         <p> Preparation Time : {recipe.prepTime} Min</p>
+//                     </div>
+//                     <div className="flex gap-5 justify-center">
 
-                        <UpdateRecipe recipe={recipe}></UpdateRecipe>
+//                         <button className="btn btn-sm"><SlLike /> {recipe.likes} </button>
 
-                        <div className="modal-action">
-                            <form method="dialog">
-                                {/* if there is a button, it will close the modal */}
-                                <button className="btn">Close</button>
-                            </form>
-                        </div>
-                    </div>
-                </dialog>
-            </div>
+//                         <button className="btn btn-sm" onClick={() => document.getElementById(`${recipe._id}`).showModal()}>Edit <MdEdit /></button>
 
-        </>
-    );
-};
+//                         <button onClick={() => handleDelete(recipe._id)} className="btn btn-sm">Delete <MdDelete /></button>
+//                     </div>
+//                 </div>
+
+//                 <dialog id={recipe._id} className="modal">
+//                     <div className="modal-box lg:w-6/12 max-w-5xl dark:bg-gray-800 dark:text-gray-200">
+
+//                         {/* <p className="py-4">Click the button below to close</p> */}
+
+//                         <UpdateRecipe recipe={recipe}></UpdateRecipe>
+
+//                         <div className="modal-action">
+//                             <form method="dialog">
+//                                 {/* if there is a button, it will close the modal */}
+//                                 <button className="btn">Close</button>
+//                             </form>
+//                         </div>
+//                     </div>
+//                 </dialog>
+//             </div>
+
+//         </>
+//     );
+// };

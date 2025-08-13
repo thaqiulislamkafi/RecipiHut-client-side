@@ -16,7 +16,7 @@ const MenuBar = () => {
 
     const sellerLinks = [
         { to: '/dashboard/addRecipe', label: 'Add Recipe', icon: <FaPlusCircle /> },
-        { to: '/dashboard/myRecipe', label: 'My Recipe', icon: <MdOutlineNoMeals /> },
+        { to: '/dashboard/my-recipe', label: 'My Recipe', icon: <MdOutlineNoMeals /> },
         { to: '/myEarnings', label: 'My Earnings', icon: <TbMoneybag /> }
     ]
 
@@ -26,7 +26,7 @@ const MenuBar = () => {
 
     return (
 
-        <div className='w-full min-h-screen bg-[#23BE0A] flex flex-col gap-2 sora-font'>
+        <div className='w-full h-screen bg-[#23BE0A] flex flex-col gap-2 sora-font'>
 
             <div className=''>
 

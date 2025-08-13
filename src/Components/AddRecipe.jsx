@@ -11,7 +11,7 @@ export const FormInput = ({ label, name, register, type, errors, placeholder, de
     <div className='flex flex-col gap-3'>
 
         <label className='label'>{label}</label>
-        <input type={type} className='input w-full dark:bg-gray-700' placeholder={placeholder} {...register(name, { required: `${label} is Required` })} defaultValue={defaultValue || ''} />
+        <input type={type} className='input rounded-3xl w-full dark:bg-gray-700' placeholder={placeholder} {...register(name, { required: `${label} is Required` })} defaultValue={defaultValue || ''} />
         {errors[name] && (<p style={{ color: 'red' }}>{errors[name].message}</p>)}
 
     </div>
@@ -52,10 +52,10 @@ const AddRecipe = () => {
     return (
         <div>
             <Fade>
-                <div className='w-[85.94vw] mx-auto mb-30 sora-font'>
+                <div className='sora-font'>
                     <p className='poppins font-bold text-3xl text-center my-10'>Add Recipe</p>
 
-                    <form onSubmit={handleSubmit(onSubmit)} className="fieldset grid grid-cols-1 lg:grid-cols-2 bg-base-200 border-base-300 rounded-box  border p-4 mx-auto gap-6 dark:bg-gray-700 dark:text-gray-200 ">
+                    <form onSubmit={handleSubmit(onSubmit)} className="fieldset grid grid-cols-1 lg:grid-cols-2  p-4 mx-auto gap-6 dark:bg-gray-700 dark:text-gray-200 ">
 
                         <FormInput label='Title' type='text' name='title' register={register} errors={errors} placeholder='Enter Recipe Title' />
 
@@ -82,7 +82,7 @@ const AddRecipe = () => {
                         <div className='flex flex-col gap-3'>
 
                           <label className="label">Cuisine Type:</label>
-                          <select {...register('cuisineType', { required: 'Cuisine Type is Required' })} className="select dark:bg-gray-700" >
+                          <select {...register('cuisineType', { required: 'Cuisine Type is Required' })} className="select rounded-3xl dark:bg-gray-700" >
                                 
                           {quisineTypes.map(type =>(
                             <option value={type}>{type}</option>
@@ -92,9 +92,9 @@ const AddRecipe = () => {
 
                         </div>
 
-                        <FormInput label='Photo' type='text' name='photoURL' register={register} errors={errors} placeholder="Enter Your PhotoURL" />
+                        <FormInput label='Photo' type='text' name='photoURL' register={register} errors={errors} placeholder="Enter Your PhotoURL"/>
 
-                        <button className="btn mx-auto lg:col-span-2 w-full dark:bg-gray-700 dark:text-gray-200">Add Recipe</button>
+                        <button className="btn mx-auto rounded-3xl lg:col-span-2 w-full dark:bg-gray-700 dark:text-gray-200">Add Recipe</button>
 
                     </form>
                 </div>

@@ -14,6 +14,7 @@ const Navbar = () => {
     const whiteLogo = 'https://i.postimg.cc/WbH87dpj/white-logo.png' ;
 
     const location = useLocation();
+    
     const handleDarkMode = () => {
         setDarkMode(!darkMode);
         console.log(darkMode);
@@ -140,11 +141,11 @@ const Navbar = () => {
                     </div>
                     {
                         user &&
-                        <div className="tooltip tooltip-left" data-tip={user?.displayName}>
+                        <Link to={'/dashboard/profile'} className="tooltip tooltip-left" data-tip={user?.displayName}>
                             <div className='rounded-full p-1 bg-base-200'>
                                 <img className='rounded-full w-10' src={`${user?.photoURL}`} alt="" />
                             </div>
-                        </div>
+                        </Link>
                     }
 
                     <div>

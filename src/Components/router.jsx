@@ -79,6 +79,14 @@ const router = createBrowserRouter (
                 {
                     path : 'profile',
                     element : <MyProfile/>
+                },
+                {
+                    path : 'addRecipe',
+                    element : <AddRecipe/>
+                },
+                {
+                    path : 'my-recipe',
+                    element : <MyRecipe/>
                 }
             ]
         },
