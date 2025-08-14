@@ -1,44 +1,66 @@
 import React, { use } from 'react';
-import { useParams } from 'react-router' ;
-import { SlLike } from "react-icons/sl" ;
-import { AuthContext } from './Provider/AuthProvider' ;
-import { Fade } from 'react-awesome-reveal' ;
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query' ;
-import axiosSecure from './Hooks/useAxios' ;
+import { useParams } from 'react-router';
+import { SlLike } from "react-icons/sl";
+import { AuthContext } from './Provider/AuthProvider';
+import { Fade } from 'react-awesome-reveal';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import axiosSecure from './Hooks/useAxios';
 import Loading from './SharedElement/Loading';
+import Swal from 'sweetalert2';
 
 
 const AllRecipeDetails = () => {
 
     const { user } = use(AuthContext);
-    const {recipeId} = useParams() ;
-    const queryClient = useQueryClient() ;
+    const { recipeId } = useParams();
+    const queryClient = useQueryClient();
 
-    const {data : recipeData, isLoading} = useQuery({
-        queryKey : ['recipeDetails',recipeId],
-        queryFn : async()=>{
-            const {data} = await axiosSecure(`/recipes/${recipeId}`) ;
-            return data ;
+    const { data: recipeData, isLoading } = useQuery({
+        queryKey: ['recipeDetails', recipeId],
+        queryFn: async () => {
+            const { data } = await axiosSecure(`/recipes/${recipeId}`);
+            return data;
         },
-        enabled : !! recipeId 
+        enabled: !!recipeId
     })
 
-    const {mutate} = useMutation({
-        mutationFn : async(likes)=>{
-            const {data} = await axiosSecure.patch(`/recipes/${recipeId}`,{likes}) ;
-            return data ;
+    const { mutate } = useMutation({
+        mutationFn: async (likes) => {
+            const { data } = await axiosSecure.patch(`/recipes/${recipeId}`, { likes });
+            return data;
         },
-        onSuccess :()=>{
+        onSuccess: () => {
             queryClient.invalidateQueries(['recipeDetails'])
         }
     })
 
+    const orderRecipe = useMutation({
+        mutationFn: async (id) => {
+            const data = await axiosSecure.patch(`/orderRecipe?email=${user?.email}`, {
+                paid: true,
+                recipeId: recipeData?._id,
+                recipeTitle: recipeData?.title,
+                orderTime: new Date().toISOString(),
+                delivered: false
+            });
+            return data;
+        },
+        onSuccess: () => {
+            Swal.fire({ title: "Deleted!", text: "Your recipe has been Successfulyy Ordered.", icon: "success" });
+    
+        }
+    })
+
     const handleLike = () => {
-        const newLikes = recipeData.likes+1 ;
+        const newLikes = recipeData.likes + 1;
         console.log(newLikes)
         mutate(newLikes)
     }
-    if(isLoading) return <Loading/>
+
+    const handleOrder = (id)=>{
+        orderRecipe.mutate(id)
+    }
+    if (isLoading) return <Loading />
 
     return (
         <div>
@@ -76,7 +98,10 @@ const AllRecipeDetails = () => {
                                 <p className='font-medium my-2'>Cuisine Type : <span className='text-[#23BE0A] font-bold'>{recipeData.cuisineType}</span></p>
                                 <p className='font-medium my-2'>Instructions : <span className='text-[#23BE0A] font-bold'>{recipeData.instructions}</span></p>
 
-                                <button onClick={handleLike} className="btn btn-sm"><SlLike /> {recipeData.likes} </button>
+                                <div className='flex gap-3'>
+                                    <button onClick={handleLike} className="btn btn-sm"><SlLike /> {recipeData.likes} </button>
+                                    <button onClick={()=>handleOrder(recipeData?._id)} className='btn btn-sm'>Order</button>
+                                </div>
 
 
                             </div>

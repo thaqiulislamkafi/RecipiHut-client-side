@@ -1,5 +1,6 @@
 import React from 'react';
-import { FaPlusCircle, FaUser } from 'react-icons/fa';
+import { FaFirstOrder, FaPlusCircle, FaUser } from 'react-icons/fa';
+import { IoFastFood } from 'react-icons/io5';
 import { MdOutlineNoMeals } from 'react-icons/md';
 import { TbMoneybag } from "react-icons/tb";
 import { NavLink } from 'react-router';
@@ -11,7 +12,8 @@ const MenuBar = () => {
 
 
     const commonLinks = [
-        { to: '/dashboard/profile', label: 'My Profile', icon: <FaUser /> }
+        { to: '/dashboard/profile', label: 'My Profile', icon: <FaUser /> },
+        { to: '/dashboard/my-order', label: 'My Order', icon: <IoFastFood /> }
     ]
 
     const sellerLinks = [

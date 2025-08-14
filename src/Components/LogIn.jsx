@@ -68,6 +68,23 @@ const LogIn = () => {
                     });
                 setLoading(false);
 
+                const data = {
+                    name : res.user.displayName ,
+                    photoURL : res.user.photoURL,
+                    email : res.user.email ,
+                    role : 'user'
+
+                }
+
+                try {
+
+                    const res =  axiosSecure.post('/createUser',data);
+                    if(res.data?.insertedId)
+                        console.log('User inserted into DB') ;
+                } catch (error) {
+                    console.log(error);
+                }
+
                 navigate(`${location.state ? location.state : "/"}`);
             })
             .catch(error => {
