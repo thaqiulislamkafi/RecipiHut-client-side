@@ -3,9 +3,13 @@ import { FaFirstOrder, FaPlusCircle, FaUser } from 'react-icons/fa';
 import { IoFastFood } from 'react-icons/io5';
 import { MdOutlineNoMeals } from 'react-icons/md';
 import { TbMoneybag } from "react-icons/tb";
-import { NavLink } from 'react-router';
+import { Link, NavLink } from 'react-router';
+import useUserRole from '../Hooks/useUserRole';
+import { FaFirstOrderAlt } from 'react-icons/fa6';
 
 const MenuBar = () => {
+
+    const userRole = useUserRole() ;
 
     const role = 'seller';
     const whiteLogo = 'https://i.postimg.cc/WbH87dpj/white-logo.png';
@@ -19,11 +23,12 @@ const MenuBar = () => {
     const sellerLinks = [
         { to: '/dashboard/addRecipe', label: 'Add Recipe', icon: <FaPlusCircle /> },
         { to: '/dashboard/my-recipe', label: 'My Recipe', icon: <MdOutlineNoMeals /> },
-        { to: '/myEarnings', label: 'My Earnings', icon: <TbMoneybag /> }
+        { to: '/dashboard/myEarnings', label: 'My Earnings', icon: <TbMoneybag /> },
+        { to: '/dashboard/requested-orders', label: 'Req. Orders', icon: <FaFirstOrderAlt /> }
     ]
 
     let links = [];
-    if (role === 'seller') links = sellerLinks;
+    if (userRole === 'seller') links = sellerLinks;
     const linksToShow = [...commonLinks, ...links];
 
     return (
@@ -34,9 +39,9 @@ const MenuBar = () => {
 
                 <div className='logo flex items-center gap-1 my-4 w-3/4 mx-auto '>
                     <img className='w-10' src={whiteLogo} alt="" />
-                    <p className='text-2xl poppins'>
+                    <Link to={'/'} className='text-2xl poppins'>
                         <span className='font-bold text-white'>RecipeHut</span>
-                    </p>
+                    </Link>
                 </div>
 
                 <div className=' h-1 w-full border-t border-gray-50 '></div>

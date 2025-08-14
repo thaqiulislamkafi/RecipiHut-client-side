@@ -13,6 +13,7 @@ import AddRecipe from "./AddRecipe";
 import Dashboard from "./Dashboard/Dashboard";
 import MyProfile from "./Dashboard/MyProfile";
 import MyOrder from "./Dashboard/MyOrder";
+import RequestedOrder from "./Dashboard/RequestedOrder";
 
 
 const router = createBrowserRouter (
@@ -92,6 +93,10 @@ const router = createBrowserRouter (
                 {
                     path : 'my-order',
                     element : <MyOrder/>
+                },
+                {
+                    path : 'requested-orders',
+                    element : <RequestedOrder/>
                 }
             ]
         },

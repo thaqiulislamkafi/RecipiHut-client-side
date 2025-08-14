@@ -41,7 +41,7 @@ const AllRecipeDetails = () => {
                 recipeId: recipeData?._id,
                 recipeTitle: recipeData?.title,
                 orderTime: new Date().toISOString(),
-                delivered: false
+                delivered: 'pending'
             });
             return data;
         },
